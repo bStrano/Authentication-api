@@ -29,9 +29,9 @@ router.get('/login', async (req, res, next) => {
             .split(':');
 
         const user = await UserController.login(email, password);
-        delete user.PASSWORD
+
         if (!user) return res.status(401).end();
-        res.status(200).json(user);
+        res.status(200).json(user.personalInfo);
     } catch (e) {
         next(e);
 

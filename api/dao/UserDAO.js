@@ -1,4 +1,5 @@
 import GenericDAO from "./GenericDAO";
+import User from "../../../Tasks-API/api/model/User";
 
 class UserDAO {
     static checkIfPasswordMatch () {
@@ -8,12 +9,30 @@ class UserDAO {
     /**
      *  Check if the credentials exists
      * @param {string} email
-     * @returns {Promise<void>} - User info
+     * @returns {Promise<User>} - User info
      */
     static async findByEmail (email) {
-        const query = 'SELECT * FROM USERS WHERE EMAIL = :email';
-        let rows = await GenericDAO.select(query, {email});
-        return rows[0];
+        try {
+            const query = `
+            SELECT
+                   ID as id,
+                   NAME as name,
+                   ADDRESS as address,
+                   PHONE as phone,
+                   EMAIL as email,
+                   PASSWORD as password,
+                   CREATED_AT as created_at,
+                   UPDATED_AT as updated_at
+            FROM USERS
+            WHERE EMAIL = :email
+        `;
+            let rows = await GenericDAO.select(query, {email});
+            if (rows.length === 0) return null;
+            return new User(...Object.values(rows[0]));
+        } catch (e) {
+            throw e;
+        }
+
     }
 
     /**

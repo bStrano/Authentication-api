@@ -6,7 +6,6 @@ module.exports = {
         poolAlias: "AUTHENTICATION",
         poolMin: 2,
         poolMax: 10,
-        poolIncrement: 0,
     },
 };
 
