@@ -1,7 +1,7 @@
-import CustomError from "./CustomError";
+import RequestError from "./RequestError";
 import Errors from "../../constants/Errors";
 
-class DatabaseError extends CustomError {
+class DatabaseError extends RequestError {
 
     constructor (errorCode) {
         super(errorCode);

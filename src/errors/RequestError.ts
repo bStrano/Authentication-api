@@ -1,6 +1,12 @@
-class CustomError {
+class RequestError extends Error{
+    name: string;
+    message: string;
+    errorCode: number;
+    httpStatus: number;
+    stack?: string
 
-    constructor (errorCode, httpStatus, message) {
+    constructor (errorCode: number, httpStatus: number, message: string) {
+        super();
         this.name = this.constructor.name;
         this.message = message;
         this.errorCode = errorCode;
@@ -15,4 +21,4 @@ class CustomError {
 }
 
 
-export default CustomError;
+export default RequestError;

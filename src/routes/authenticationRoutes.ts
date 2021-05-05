@@ -1,5 +1,5 @@
-import UserController from "../controllers/UserController";
 import express from "express";
+import UserController from '../controllers/UserController';
 
 
 let router = express.Router();
@@ -23,16 +23,19 @@ router.post('/register', async (req, res, next) => {
 
 router.get('/login', async (req, res, next) => {
     try {
-        const [, hash] = req.headers.authorization.split(' ');
+        // @ts-ignore
+        const [, hash] = req.headers.authorization?.split(' ');
         const [email, password] = Buffer.from(hash, 'base64')
             .toString()
             .split(':');
 
         const user = await UserController.login(email, password);
 
-        if (!user) return res.status(401).end();
-        res.status(200).json(user.personalInfo);
+        res.status(200).json(user);
     } catch (e) {
+        if(e.message === 'Invalid credentials'){
+            return res.status(401).end();
+        }
         next(e);
 
 
