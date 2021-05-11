@@ -1,46 +1,15 @@
 import express from "express";
-import UserController from '../controllers/UserController';
+import AuthenticationController from '../controllers/AuthenticationController';
+import ExpressAdapter from '../adapters/ExpressAdapter';
 
 
 let router = express.Router();
 
-router.post('/register', async (req, res, next) => {
-    const {name, email, password} = req.body;
 
-    if (!name || !email || !password) {
-        res.status(400).end();
-        return;
-    }
-
-    try {
-        let userId = await UserController.register(name, email, password);
-        res.status(200).json(userId)
-    } catch (e) {
-        next(e);
-    }
-
-})
-
-router.get('/login', async (req, res, next) => {
-    try {
-        // @ts-ignore
-        const [, hash] = req.headers.authorization?.split(' ');
-        const [email, password] = Buffer.from(hash, 'base64')
-            .toString()
-            .split(':');
-
-        const user = await UserController.login(email, password);
-
-        res.status(200).json(user);
-    } catch (e) {
-        if(e.message === 'Invalid credentials'){
-            return res.status(401).end();
-        }
-        next(e);
+let authenticationController = new AuthenticationController();
+router.post('/register', ExpressAdapter.handle(authenticationController.register.bind(authenticationController)));
+router.get('/login', ExpressAdapter.handle(authenticationController.login.bind(authenticationController)));
 
 
-    }
-
-});
 
 module.exports = router;

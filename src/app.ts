@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import morgan from 'morgan'
 import RequestError from './errors/RequestError';
 
@@ -15,14 +15,13 @@ app.use(express.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/stralom/authentication', userRouter);
 
-app.use((error: RequestError, req: Request, res: Response,) => {
+app.use((error: RequestError, req: Request, res: Response,next: NextFunction) => {
     console.log("ERROR", error);
     res.status(error.httpStatus || 500);
     res.json({
         error: {
             name: error.name,
-            message: error.message,
-            code: error.errorCode
+            message: error.message
         }
     });
 });
