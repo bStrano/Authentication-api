@@ -1,18 +1,20 @@
-import jwt from "jsonwebtoken";
-import UserService from '../services/UserService';
+import AuthenticationService from '../services/AuthenticationService';
 import RequestError from '../errors/RequestError';
 import IRegisterDTO from '../mappers/IRegisterDTO';
 
 
 class AuthenticationController {
-
+    private readonly authenticationService: AuthenticationService;
+    constructor() {
+        this.authenticationService = new AuthenticationService();
+    }
 
     async login ({authorization}: { authorization: string }) {
         const [, hash] = authorization?.split(' ');
         const [email, password] = Buffer.from(hash, 'base64')
           .toString()
           .split(':');
-        const user =  await UserService.login(email, password);
+        const user =  this.authenticationService.login(email, password);
         if(user){
             return user
         } else {
@@ -28,10 +30,9 @@ class AuthenticationController {
         if (!params.name || !params.email || !params.password) {
             throw new RequestError(400)
         }
-        let userId = await UserService.register(params);
-        const accessToken = jwt.sign({id: userId}, process.env.ACCESS_TOKEN_SECRET);
-        return {id: userId, accessToken};
+        return  this.authenticationService.register(params);
     }
+
 
 }
 

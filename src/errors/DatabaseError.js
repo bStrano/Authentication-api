@@ -1,5 +1,5 @@
 import RequestError from "./RequestError";
-import Errors from "../../constants/Errors";
+import ERRORS from "../../constants/ERRORS";
 
 class DatabaseError extends RequestError {
 
@@ -7,7 +7,7 @@ class DatabaseError extends RequestError {
         super(errorCode);
 
         switch (errorCode) {
-            case Errors.DB_NONEXISTENT_ID:
+            case ERRORS.DB_NONEXISTENT_ID:
                 this.message = "No values updated";
                 this.httpStatus = 400;
         }
