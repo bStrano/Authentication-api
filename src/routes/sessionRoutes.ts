@@ -5,7 +5,7 @@ import SessionController from '../controllers/SessionController';
 let router = express.Router();
 
 const sessionController = new SessionController();
-router.get('/token', ExpressAdapter.handle(sessionController.restoreSession.bind(sessionController)))
+router.post('/token', ExpressAdapter.handle(sessionController.restoreSession.bind(sessionController)))
 router.delete('/:user', ExpressAdapter.handle(sessionController.removeSession.bind(sessionController)))
 
 

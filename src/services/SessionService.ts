@@ -14,11 +14,11 @@ export default class SessionService {
 
   generateAccessToken(user: User) {
     // TODO: increase token time
-    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15s'});
+    return jwt.sign({id: user.id, name: user.name}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '300s'});
   }
 
   generateRefreshToken(user: User) {
-    return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({id: user.id, name: user.name}, process.env.REFRESH_TOKEN_SECRET);
   }
 
   async verifyRefreshToken(token: string) {
