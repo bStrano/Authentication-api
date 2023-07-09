@@ -1,5 +1,5 @@
 import {IsEnum, IsNumber, validateSync} from "class-validator";
-import {Environment} from "./envinronment.enum";
+import {Environment} from "./environment.enum";
 import {plainToInstance} from "class-transformer";
 
 class EnvironmentVariables {
