@@ -1,0 +1,35 @@
+
+services:
+  postgres-authentication:
+    image: postgres
+    restart: always
+    volumes:
+      - data:/data/db/postgres
+    env_file:
+      - .env.local
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    ports:
+      - 5440:5432
+  api-authentication:
+    working_dir: '/app'
+    build:
+      context: ./
+      dockerfile: Dockerfile-dev
+    restart: always
+    ports:
+      - '5000:5000'
+    volumes:
+      - logs:/app/logs
+      - ./:/app
+      - /app/node_modules
+    env_file:
+      - .env.local
+    depends_on:
+      - postgres-authentication
+volumes:
+  data:
+  logs:
+

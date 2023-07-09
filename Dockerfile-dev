@@ -1,0 +1,17 @@
+# https://stackoverflow.com/questions/74815121/why-is-hot-reloading-not-working-in-my-nestjs-docker-compose-multistage-project
+FROM node:alpine
+USER root
+
+WORKDIR /app
+
+COPY package.json /app
+RUN yarn install
+RUN npm i -g typescript@next
+COPY . /app
+EXPOSE 3000
+
+RUN yarn build
+
+USER node
+
+CMD yarn start:dev
