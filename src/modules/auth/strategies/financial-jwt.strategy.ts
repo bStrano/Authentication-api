@@ -1,18 +1,18 @@
-import {ExtractJwt, Strategy} from 'passport-jwt';
-import {PassportStrategy} from '@nestjs/passport';
 import {Injectable} from '@nestjs/common';
 import {EnvironmentService} from "../../../configs/environment/environment.service";
+import {lookupPlatformName, PlatformEnum} from "../../../shared/constants/PlatformEnum";
+import {ExtractJwt, Strategy} from "passport-jwt";
 import {TokenPayloadInterface} from "../types/TokenPayloadInterface";
+import {PassportStrategy} from "@nestjs/passport";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-
+export class FinancialJwtStrategy extends PassportStrategy(Strategy, lookupPlatformName(PlatformEnum.FINANCIAL))  {
 
   constructor(private readonly environmentService: EnvironmentService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: environmentService.jwtSecret,
+      secretOrKey: environmentService.accessTokenJwtConfig(PlatformEnum.FINANCIAL).secret
     });
   }
 

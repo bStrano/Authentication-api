@@ -1,10 +1,24 @@
 import {Injectable} from "@nestjs/common";
-import {USERS_MOCK} from "../mocks/users.mock";
+import {UserRepository} from "../repositories/user.repository";
+import {RegisterDto} from "../../auth/dto/register.dto";
+
+const bcrypt = require('bcrypt');
 
 @Injectable()
 export class UsersService {
+    constructor(private readonly userRepository: UserRepository) {
+    }
 
+
+    async findById(id: number){
+        return this.userRepository.findOne({id});
+    }
     async findByEmail(email: string){
-        return USERS_MOCK.find( item => item.email === email);
+        return this.userRepository.findOne({email});
+    }
+
+    async register(registerDto: RegisterDto){
+        const encryptedPassword = await bcrypt.hash(registerDto.password, 10)
+        return this.userRepository.save({...registerDto, password: encryptedPassword});
     }
 }
