@@ -9,9 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   initializeSwagger(app);
   const configService = app.get(ConfigService);
-  const port = configService.get('PORT');
+  const port = configService.get('PORT') || 3002;
 
-  await app.listen(5000 || port);
-  logger.log(`🚀 Application started at port ${5000 || port}`)
+  await app.listen(port);
+  logger.log(`🚀 Application started at port ${port}`)
 }
 bootstrap();
