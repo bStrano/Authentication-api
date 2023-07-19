@@ -1,5 +1,5 @@
 export enum Environment {
-    Homolog = "homolog",
-    Production = "production",
-    Local = "local",
+  Homolog = 'homolog',
+  Production = 'production',
+  Local = 'local',
 }
