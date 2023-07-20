@@ -12,7 +12,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
     ports:
-      - 5440:5432
+      - 5445:5432
   api-authentication:
     working_dir: '/app'
     build:
@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile-dev
     restart: always
     ports:
-      - '5000:5000'
+      - '3002:3002'
     volumes:
       - logs:/app/logs
       - ./:/app

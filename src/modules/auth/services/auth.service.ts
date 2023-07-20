@@ -10,7 +10,7 @@ import { EnvironmentService } from '../../../configs/environment/environment.ser
 import { addHours } from 'date-fns';
 import { RefreshTokens } from '../../session/entities/refresh.tokens.entity';
 
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {

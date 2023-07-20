@@ -8,7 +8,7 @@ COPY package.json /app
 RUN yarn install
 RUN npm i -g typescript@next
 COPY . /app
-EXPOSE 5000
+EXPOSE 3002
 
 USER node
 
