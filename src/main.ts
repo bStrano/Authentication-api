@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { initializeSwagger } from './configs/swagger/initializeSwagger';
 
 async function bootstrap() {
@@ -20,6 +20,7 @@ async function bootstrap() {
     });
   }
 
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
   logger.log(`🚀 Application started at port ${port}`);
 }

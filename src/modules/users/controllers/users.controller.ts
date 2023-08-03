@@ -1,7 +1,7 @@
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
-import { RegisterDto } from '../../auth/dto/register.dto';
+import { RegisterDto } from '../dto/register.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -9,7 +9,7 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Post('/register')
-  async register(@Request() req, @Body() body: RegisterDto) {
+  async register(@Body() body: RegisterDto) {
     return this.userService.register(body);
   }
 }

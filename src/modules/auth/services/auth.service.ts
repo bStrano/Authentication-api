@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../../users/services/users.service';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayloadInterface } from '../types/TokenPayloadInterface';
 import { User } from '../../users/entities/user.entity';
@@ -11,17 +10,19 @@ import { addHours } from 'date-fns';
 import { RefreshTokens } from '../../session/entities/refresh.tokens.entity';
 
 import * as bcrypt from 'bcrypt';
+import { UserRepository } from '../../users/repositories/user.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    @Inject(forwardRef(() => UserRepository))
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly sessionService: RefreshTokenService,
     private readonly environmentService: EnvironmentService,
   ) {}
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.userRepository.findOne({ email });
     if (user) {
       const isEqual = await bcrypt.compare(pass, user.password);
       if (isEqual) {
@@ -55,7 +56,7 @@ export class AuthService {
       loginSessionDto.refreshToken,
     );
     await this.jwtService.verify(refreshToken.code);
-    const user = await this.usersService.findById(refreshToken.userId);
+    const user = await this.userRepository.findOne({ id: refreshToken.userId });
 
     await this.sessionService.deleteByCode(
       user.id,

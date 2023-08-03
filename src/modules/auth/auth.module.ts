@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
@@ -14,7 +14,7 @@ import { KeychainJwtAuthGuard } from './guards/keychain-jwt-auth.guard';
 
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     PassportModule,
     SessionModule,
     EnvironmentModule,
@@ -29,5 +29,6 @@ import { KeychainJwtAuthGuard } from './guards/keychain-jwt-auth.guard';
     FinancialJwtAuthGuard,
     KeychainJwtAuthGuard,
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}
