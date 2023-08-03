@@ -6,7 +6,12 @@ import { initializeSwagger } from './configs/swagger/initializeSwagger';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: [/.*\.stralom\.com$/],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    },
+  });
   initializeSwagger(app);
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') || 3002;
