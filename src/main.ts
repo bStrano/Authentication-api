@@ -15,6 +15,15 @@ async function bootstrap() {
   initializeSwagger(app);
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') || 3002;
+  const NODE_ENV = configService.get('NODE_ENV');
+  if (NODE_ENV === 'local') {
+    app.enableCors();
+  } else {
+    app.enableCors({
+      origin: [/.*\.stralom\.com$/],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    });
+  }
 
   await app.listen(port);
   logger.log(`🚀 Application started at port ${port}`);
