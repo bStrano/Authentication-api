@@ -11,6 +11,7 @@ import { RefreshTokens } from '../../session/entities/refresh.tokens.entity';
 
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../../users/repositories/user.repository';
+import { LoginResponse } from '../responses/LoginResponse';
 
 @Injectable()
 export class AuthService {
@@ -40,22 +41,31 @@ export class AuthService {
       name: user.name,
     };
     const refreshToken = await this.generateRefreshToken(payload, platform);
-    return {
+    return new LoginResponse({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      lastName: user.lastName,
+      refreshToken,
       accessToken: this.jwtService.sign(payload, {
         secret: this.environmentService.accessTokenJwtConfig(platform).secret,
         expiresIn: `${
           this.environmentService.accessTokenJwtConfig(platform).expirationTime
         }s`,
       }),
-      refreshToken,
-    };
+    });
   }
 
   async loginSession(loginSessionDto: LoginSessionDto) {
     const refreshToken = await this.sessionService.findOneActive(
       loginSessionDto.refreshToken,
     );
-    await this.jwtService.verify(refreshToken.code);
+    if (!refreshToken) throw new Error('Invalid refresh token');
+    await this.jwtService.verify(refreshToken.code, {
+      secret: this.environmentService.refreshTokenJwtConfig(
+        refreshToken.platform,
+      ).secret,
+    });
     const user = await this.userRepository.findOne({ id: refreshToken.userId });
 
     await this.sessionService.deleteByCode(
@@ -70,12 +80,10 @@ export class AuthService {
     platform: PlatformEnum,
   ) {
     const expirationTime =
-      this.environmentService.refreshTokenJwtConfig(platform).expirationTime /
-      60 /
-      60;
+      this.environmentService.refreshTokenJwtConfig(platform).expirationTime;
     const token = this.jwtService.sign(payload, {
       secret: this.environmentService.refreshTokenJwtConfig(platform).secret,
-      expiresIn: `${expirationTime}h`,
+      expiresIn: `${expirationTime}s`,
     });
 
     const refreshToken = new RefreshTokens({

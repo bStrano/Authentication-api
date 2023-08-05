@@ -9,7 +9,7 @@ import { RegisterDto } from '../dto/register.dto';
 
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../../auth/services/auth.service';
-import { UserRegisterResult } from '../results/user-register.result';
+import { LoginResponse } from '../../auth/responses/LoginResponse';
 
 @Injectable()
 export class UsersService {
@@ -40,10 +40,10 @@ export class UsersService {
       registerDto.platform,
     );
 
-    return new UserRegisterResult({
+    return new LoginResponse({
       ...registeredUser,
       accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken.code,
+      refreshToken: tokens.refreshToken,
     });
   }
 }
