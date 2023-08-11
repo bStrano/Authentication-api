@@ -15,7 +15,7 @@ RUN  pip3 install --upgrade pip \
 
 WORKDIR /app
 
-RUN aws s3 cp s3://stralom-deploys/authentication/.env.production /app/.env.production
+RUN aws s3 cp s3://stralom-deploys/authentication/api/.env.production /app/.env.production
 COPY package.json /app
 RUN yarn install
 
