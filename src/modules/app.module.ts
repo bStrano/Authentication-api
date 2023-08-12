@@ -30,6 +30,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         database: environmentService.databaseInfo.database,
         entities: ['dist/**/*.entity{.js,.ts}', 'src/**/*.entity{.js.ts}'],
         synchronize: false,
+        ssl: {
+          ca: process.env.SSL_CERT,
+        },
       }),
       inject: [EnvironmentService],
     }),
