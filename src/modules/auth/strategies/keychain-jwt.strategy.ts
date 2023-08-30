@@ -15,6 +15,8 @@ export class KeychainJwtStrategy extends PassportStrategy(
 ) {
   constructor(private readonly environmentService: EnvironmentService) {
     super({
+      issuer: 'Stralom-Authentication',
+      audience: 'Stralom-Keychain',
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: environmentService.accessTokenJwtConfig(
