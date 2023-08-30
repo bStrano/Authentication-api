@@ -15,8 +15,8 @@ export class FinancialJwtStrategy extends PassportStrategy(
 ) {
   constructor(private readonly environmentService: EnvironmentService) {
     super({
-      issuer: `Stralom-${PlatformEnum.AUTHENTICATION}`,
-      audience: `Stralom-${PlatformEnum.FINANCIAL}`,
+      issuer: `Stralom-${lookupPlatformName(PlatformEnum.AUTHENTICATION)}`,
+      audience: `Stralom-${lookupPlatformName(PlatformEnum.FINANCIAL)}`,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: environmentService.accessTokenJwtConfig(

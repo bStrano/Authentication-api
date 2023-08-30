@@ -51,7 +51,7 @@ export class AuthService {
       lastName: user.lastName,
       refreshToken,
       accessToken: this.jwtService.sign(payload, {
-        issuer: `Stralom-${PlatformEnum.AUTHENTICATION}`,
+        issuer: `Stralom-${lookupPlatformName(PlatformEnum.AUTHENTICATION)}`,
         audience: `Stralom-${lookupPlatformName(platform)}`,
         secret: this.environmentService.accessTokenJwtConfig(platform).secret,
         expiresIn: `${
@@ -87,7 +87,7 @@ export class AuthService {
     const expirationTime =
       this.environmentService.refreshTokenJwtConfig(platform).expirationTime;
     const token = this.jwtService.sign(payload, {
-      issuer: `Stralom-${PlatformEnum.AUTHENTICATION}`,
+      issuer: `Stralom-${lookupPlatformName(PlatformEnum.AUTHENTICATION)}`,
       audience: `Stralom-${lookupPlatformName(platform)}`,
       secret: this.environmentService.refreshTokenJwtConfig(platform).secret,
       expiresIn: `${expirationTime}s`,
