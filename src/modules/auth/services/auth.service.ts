@@ -3,7 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenPayloadInterface } from '../types/TokenPayloadInterface';
 import { User } from '../../users/entities/user.entity';
 import { RefreshTokenService } from '../../session/services/refresh-token.service';
-import { PlatformEnum } from '../../../shared/constants/PlatformEnum';
+import {
+  lookupPlatformName,
+  PlatformEnum,
+} from '../../../shared/constants/PlatformEnum';
 import { LoginSessionDto } from '../dto/login-session.dto';
 import { EnvironmentService } from '../../../configs/environment/environment.service';
 import { addHours } from 'date-fns';
@@ -48,6 +51,8 @@ export class AuthService {
       lastName: user.lastName,
       refreshToken,
       accessToken: this.jwtService.sign(payload, {
+        issuer: `Stralom-${PlatformEnum.AUTHENTICATION}`,
+        audience: `Stralom-${lookupPlatformName(platform)}`,
         secret: this.environmentService.accessTokenJwtConfig(platform).secret,
         expiresIn: `${
           this.environmentService.accessTokenJwtConfig(platform).expirationTime
@@ -82,6 +87,8 @@ export class AuthService {
     const expirationTime =
       this.environmentService.refreshTokenJwtConfig(platform).expirationTime;
     const token = this.jwtService.sign(payload, {
+      issuer: `Stralom-${PlatformEnum.AUTHENTICATION}`,
+      audience: `Stralom-${lookupPlatformName(platform)}`,
       secret: this.environmentService.refreshTokenJwtConfig(platform).secret,
       expiresIn: `${expirationTime}s`,
     });
