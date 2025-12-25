@@ -19,6 +19,7 @@ import {
   MultipleAuthorizeGuard,
   MultipleGuardsReferences,
 } from '../../../shared/guards/MultipleAuthorizeGuard';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -27,11 +28,13 @@ export class AuthController {
 
   @ApiBearerAuth()
   @UseGuards(LocalAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 login attempts per minute
   @Post('login')
   async login(@Request() req, @Body() body: LoginDto) {
     return this.authService.login(req.user, body.platform);
   }
 
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 session refresh per minute
   @Patch('session')
   async loginSession(@Body() loginSessionDto: LoginSessionDto) {
     return this.authService.loginSession(loginSessionDto);

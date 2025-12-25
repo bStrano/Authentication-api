@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { RefreshTokens } from '../entities/refresh.tokens.entity';
 
 @Injectable()
@@ -24,5 +24,9 @@ export class RefreshTokenRepository {
 
   async findOneOrFail(refreshToken: Partial<RefreshTokens>) {
     return this.refreshTokenRepository.findOneOrFail({ where: refreshToken });
+  }
+
+  async delete(criteria: FindOptionsWhere<RefreshTokens>) {
+    return this.refreshTokenRepository.delete(criteria);
   }
 }

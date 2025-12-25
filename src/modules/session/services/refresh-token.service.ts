@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
 import { RefreshTokens } from '../entities/refresh.tokens.entity';
+import { LessThan } from 'typeorm';
+import { getErrorMessage } from '../../../shared/constants/error-messages';
 
 @Injectable()
 export class RefreshTokenService {
@@ -15,7 +17,7 @@ export class RefreshTokenService {
   async deleteByCode(userId: number, code: string) {
     const refreshToken = this.refreshTokenRepository.findOne({ userId, code });
     if (!refreshToken) {
-      throw new NotFoundException('Token não encontrado');
+      throw new NotFoundException(getErrorMessage('TOKEN_NOT_FOUND', 'en'));
     }
     return this.refreshTokenRepository.deleteByCode(code);
   }
@@ -23,11 +25,11 @@ export class RefreshTokenService {
   async findOneActive(code: string) {
     const token = await this.refreshTokenRepository.findOne({ code });
     if (!token) {
-      throw new ForbiddenException('Token não encontrado');
+      throw new ForbiddenException(getErrorMessage('TOKEN_NOT_FOUND', 'en'));
     }
     if (token) {
       if (token.expiryAt < new Date()) {
-        throw new ForbiddenException('Token expirado.');
+        throw new ForbiddenException(getErrorMessage('TOKEN_EXPIRED', 'en'));
       }
     }
     return token;
@@ -39,5 +41,16 @@ export class RefreshTokenService {
 
   async save(refreshToken: RefreshTokens) {
     return await this.refreshTokenRepository.save(refreshToken);
+  }
+
+  /**
+   * Manual cleanup method for expired tokens
+   * Can be called on-demand (also used by TasksService)
+   */
+  async cleanupExpiredTokens(): Promise<number> {
+    const result = await this.refreshTokenRepository.delete({
+      expiryAt: LessThan(new Date()),
+    });
+    return result.affected || 0;
   }
 }
