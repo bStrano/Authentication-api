@@ -7,6 +7,8 @@ export const USERS_MOCK: User[] = [
     lastName: 'Strano',
     email: 'brunolstr@gmail.com',
     password: 'senha',
+    googleId: null,
+    profilePicture: null,
   },
   {
     id: 2,
@@ -14,5 +16,7 @@ export const USERS_MOCK: User[] = [
     lastName: 'Strano',
     email: 'bruno_strano@hotmail.com',
     password: 'senha2',
+    googleId: null,
+    profilePicture: null,
   },
 ];

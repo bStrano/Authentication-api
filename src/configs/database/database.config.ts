@@ -18,5 +18,6 @@ export const AppDataSource = new DataSource({
   logging: true,
   ssl: {
     ca: process.env.SSL_CERT,
+    rejectUnauthorized: false,
   },
 });

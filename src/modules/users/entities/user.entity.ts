@@ -10,6 +10,10 @@ export class User {
   email: string;
   @Column()
   lastName: string;
-  @Column()
+  @Column({ nullable: true })
   password: string;
+  @Column({ nullable: true, name: 'google_id' })
+  googleId: string;
+  @Column({ nullable: true, name: 'profile_picture' })
+  profilePicture: string;
 }

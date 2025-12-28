@@ -105,4 +105,36 @@ export class AuthService {
   async logout(userId: number, refreshTokenCode: string) {
     return this.sessionService.deleteByCode(userId, refreshTokenCode);
   }
+
+  async validateGoogleUser(googleUser: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
+    googleId: string;
+  }): Promise<User> {
+    let user = await this.userRepository.findOne({ googleId: googleUser.googleId });
+
+    if (!user) {
+      user = await this.userRepository.findOne({ email: googleUser.email });
+
+      if (user) {
+        user.googleId = googleUser.googleId;
+        user.profilePicture = googleUser.profilePicture;
+        await this.userRepository.save(user);
+      } else {
+        const newUser = {
+          email: googleUser.email,
+          name: googleUser.firstName,
+          lastName: googleUser.lastName,
+          googleId: googleUser.googleId,
+          profilePicture: googleUser.profilePicture,
+          password: null,
+        };
+        user = await this.userRepository.save(newUser);
+      }
+    }
+
+    return user;
+  }
 }

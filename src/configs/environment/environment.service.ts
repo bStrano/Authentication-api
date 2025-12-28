@@ -48,6 +48,24 @@ export class EnvironmentService extends ConfigService {
       database: this.configService.get<string>('DB_DATABASE'),
     };
   }
+
+  googleOAuthConfig(platform: PlatformEnum) {
+    const name = lookupPlatformName(platform);
+    return {
+      clientID: this.configService.get<string>(`${name}_GOOGLE_CLIENT_ID`),
+      clientSecret: this.configService.get<string>(
+        `${name}_GOOGLE_CLIENT_SECRET`,
+      ),
+      callbackURL: this.configService.get<string>(
+        `${name}_GOOGLE_CALLBACK_URL`,
+      ),
+    };
+  }
+
+  frontendUrl(platform: PlatformEnum): string {
+    const name = lookupPlatformName(platform);
+    return this.configService.get<string>(`${name}_FRONTEND_URL`);
+  }
 }
 
 interface JwtConfigEnvironment {

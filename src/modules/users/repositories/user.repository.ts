@@ -14,7 +14,7 @@ export class UserRepository {
     return this.userRepository.findOne({ where: user });
   }
 
-  async save(user: RegisterDto) {
+  async save(user: RegisterDto | Partial<User>) {
     return this.userRepository.save(user);
   }
 }
