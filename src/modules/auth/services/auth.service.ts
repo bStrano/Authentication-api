@@ -113,16 +113,24 @@ export class AuthService {
     profilePicture: string;
     googleId: string;
   }): Promise<User> {
-    let user = await this.userRepository.findOne({ googleId: googleUser.googleId });
+    // Primeiro tenta buscar por googleId
+    let user = await this.userRepository.findOne({
+      googleId: googleUser.googleId,
+    });
 
     if (!user) {
+      // Se não encontrou por googleId, busca por email
       user = await this.userRepository.findOne({ email: googleUser.email });
 
       if (user) {
+        // Usuário existe mas não tem googleId - atualiza
         user.googleId = googleUser.googleId;
         user.profilePicture = googleUser.profilePicture;
-        await this.userRepository.save(user);
+        user.name = googleUser.firstName;
+        user.lastName = googleUser.lastName;
+        return this.userRepository.save(user);
       } else {
+        // Usuário não existe - cria novo
         const newUser = {
           email: googleUser.email,
           name: googleUser.firstName,
@@ -131,10 +139,32 @@ export class AuthService {
           profilePicture: googleUser.profilePicture,
           password: null,
         };
-        user = await this.userRepository.save(newUser);
+        return this.userRepository.save(newUser);
       }
-    }
+    } else {
+      // Usuário encontrado por googleId - atualiza dados se necessário
+      let needsUpdate = false;
 
-    return user;
+      if (user.profilePicture !== googleUser.profilePicture) {
+        user.profilePicture = googleUser.profilePicture;
+        needsUpdate = true;
+      }
+
+      if (user.name !== googleUser.firstName) {
+        user.name = googleUser.firstName;
+        needsUpdate = true;
+      }
+
+      if (user.lastName !== googleUser.lastName) {
+        user.lastName = googleUser.lastName;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        return this.userRepository.save(user);
+      }
+
+      return user;
+    }
   }
 }
