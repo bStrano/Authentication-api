@@ -1,20 +1,16 @@
-import { Injectable, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, ExecutionContext, BadRequestException, CanActivate } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PlatformEnum } from '../../../shared/constants/PlatformEnum';
 
 @Injectable()
-export class GoogleDynamicAuthGuard extends AuthGuard([
-  'google-financial',
-  'google-keychain',
-  'google-life-gamification',
-]) {
+export class GoogleDynamicAuthGuard implements CanActivate {
   private readonly strategyMap = new Map<PlatformEnum, string>([
     [PlatformEnum.FINANCIAL, 'google-financial'],
     [PlatformEnum.KEYCHAIN, 'google-keychain'],
     [PlatformEnum.LIFE_GAMIFICATION, 'google-life-gamification'],
   ]);
 
-  getAuthenticateOptions(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     // No callback, o platform vem do state
@@ -40,18 +36,21 @@ export class GoogleDynamicAuthGuard extends AuthGuard([
 
     const strategyName = this.strategyMap.get(platform);
 
-    // Adiciona o platform no state para preservar no callback
-    const options: any = {
-      session: false,
-      property: 'user',
-      strategy: strategyName
+    // Cria um guard dinamicamente com a estratégia correta
+    const DynamicGuard = class extends AuthGuard(strategyName) {
+      getAuthenticateOptions() {
+        // Se não for callback, adiciona o state
+        if (!request.query.state) {
+          return {
+            session: false,
+            state: JSON.stringify({ platform }),
+          };
+        }
+        return { session: false };
+      }
     };
 
-    // Se não for callback (não tem state), adiciona o state
-    if (!request.query.state) {
-      options.state = JSON.stringify({ platform });
-    }
-
-    return options;
+    const guard = new DynamicGuard();
+    return guard.canActivate(context) as Promise<boolean>;
   }
 }
